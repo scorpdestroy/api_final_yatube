@@ -1,107 +1,158 @@
-## Проект «API для Yatube»
+# API для Yatube
 
-Yatube - проект социальной сети. «API для Yatube» расширяет возможности социальной сети. Новый функционал позволяет пользователям публиковать свои посты и управлять подписками через программный интерфейс взаимодействия.
+Учебный проект Яндекс.Практикум курса Python-разработчик(backend).
 
-### Реализованы возможности
+## Описание
 
-- Получение, создание, обновление, удаление публикаций.
-- Получение, создание, обновление, удаление комментариев к публикациям.
-- Просмотр сообществ и детальной информации о них.
-- Отслеживание подписок на авторов, а так же возможность подписки на интересующего автора поста.
-- Получение, обновление и проверка JWT авторизации.
+Yatube - социальная сеть для публикации дневников. Позволяет публиковать посты, комментировать посты, осуществлять подписку на авторов.
 
-### Технологии
+Для разработки API использован Django REST framework.
 
-- [Python](https://www.python.org/) - язык программирования.
-- [Django](https://www.djangoproject.com/) - свободный фреймворк для веб-приложений на языке Python.
-- [Django REST Framework](https://www.django-rest-framework.org/) - мощный и гибкий набор инструментов для создания веб-API.
-- [Simple JWT](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/) - плагин аутентификации JSON Web Token для Django REST Framework.
+## Установка и запуск в dev-режиме
 
-### Как запустить проект:
+ 1. Установите виртуальное окружение (команда: `python -m venv venv`).
+ 2. Активируйте виртуальное окружение (команда: `source venv/Scripts/activate`).
+ 3. Установите зависимости из файла requirements.txt (команда: `pip install -r requirements.txt`).
+ 4. Запустите dev-сервер (команда: `python manage.py runserver`).
 
-Клонировать репозиторий и перейти в него в командной строке:
+## Документация к API
 
-`git clone https://github.com/apolwow/api_final_yatube.git`
+ После запуска dev-сервера документация к API доступна по адресу:
+ <http://127.0.0.1:8000/redoc/>
 
-`cd api_final_yatube`
+## Примеры запросов
 
+### Публикация и получение постов
 
-Создать и активировать виртуальное окружение:
+Request: ```[GET] http://127.0.0.1:8000/api/v1/posts/?limit=2&offset=1```
 
-+ `python3 -m venv env`
-+ `source env/bin/activate`
-+ `python3 -m pip install --upgrade pip`
+Response:
 
-Установить зависимости из файла requirements.txt:
-`pip install -r requirements.txt`
-
-Выполнить миграции:
-`python3 manage.py migrate`
-
-
-Запустить проект:
-`python3 manage.py runserver`
-#### После запуска проекта, документация будет доступна по адресу:
-`http://localhost:port/redoc/`
-
-#### Примеры запросов:
-
-POST-запрос с токеном, добавление новой публикации в коллекцию публикаций.
-
-`POST http://localhost:port/api/v1/posts/`
-
-```
+```json
 {
-  "text": "Однажды в студеную зимнюю пору, я из лесу вышел, был сильный мороз!",
-  "group": 1
+    "count": 5,
+    "next": "http://127.0.0.1:8000/api/v1/posts/?limit=2&offset=3",
+    "previous": "http://127.0.0.1:8000/api/v1/posts/?limit=2",
+    "results": [
+        {
+            "id": 2,
+            "author": "string",
+            "text": "string",
+            "pub_date": "2022-08-06T10:01:17.273956Z",
+            "image": "string",
+            "group": 0
+        },
+        {
+            "id": 3,
+            "author": "string",
+            "text": "string",
+            "pub_date": "2022-08-06T10:42:39.095878Z",
+            "image": "string",
+            "group": 0
+        }
+    ]
 }
 ```
 
-Ответ:
+Request: ```[POST] http://127.0.0.1:8000/api/v1/posts/```
 
-```
+Request body:
+
+```json
 {
-    "id": 9,
-    "author": "root",
-    "text": "Однажды в студеную зимнююю пору, я из лесу вышел, был сильный мороз!",
-    "pub_date": "2021-09-22T02:37:44.494905Z",
-    "image": null,
-    "group": 1
+    "text": "string",
+    "image": "string",
+    "group": 0
 }
 ```
 
+Response:
 
-GET-запрос, получение информации о сообществе по id=2.
-
-`GET http://localhost:port/api/v1/groups/2/`
-
-Ответ:
-
-```
+```json
 {
-    "id": 2,
-    "title": "group2",
-    "slug": "group2",
-    "description": "group2"
+    "id": 0,
+    "author": "string",
+    "text": "string",
+    "pub_date": "2022-08-06T10:59:31.721673Z",
+    "image": "string",
+    "group": 0
 }
 ```
 
-POST-запрос, подписка авторизованного пользователя `user=root` от имени которого сделан запрос на автора интересующей публикации `following=admin`.
+### Публикация и получение комментариев к постам
 
-`POST http://localhost:port/api/v1/follow/`
+Request:```[GET] http://127.0.0.1:8000/api/v1/posts/1/comments/```
 
+Response:
+
+```json
+[
+    {
+        "id": 1,
+        "author": "string",
+        "post": 1,
+        "text": "string",
+        "created": "2022-08-06T10:59:31.721673Z"
+    }
+]
 ```
+
+Request:```[POST] http://127.0.0.1:8000/api/v1/posts/1/comments/```
+
+Request body:
+
+```json
 {
-  "following": "admin"
+    "text": "1st comment"
 }
 ```
 
-Ответ:
+Response:
 
-```
+```json
 {
-    "id": 6,
-    "user": "root",
-    "following": "admin"
+    "id": 1,
+    "author": "string",
+    "post": 1,
+    "text": "string",
+    "created": "2022-08-06T10:59:31.721673Z"
 }
 ```
+
+### Подписка на авторов
+
+Request: ```[GET] http://127.0.0.1:8000/api/v1/follow/```
+
+Response:
+
+```json
+[
+    {
+        "user": "string",
+        "following": "string"
+    }
+]
+```
+
+Request: ```[POST] http://127.0.0.1:8000/api/v1/follow/```
+
+Request body:
+
+```json
+{
+    "following": "string"
+}
+```
+
+Response:
+
+```json
+{
+    "user": "string",
+    "following": "string"
+}
+```
+
+## Автор
+
+ Андрей Плотников (Andy.Plo@yandex.ru)
